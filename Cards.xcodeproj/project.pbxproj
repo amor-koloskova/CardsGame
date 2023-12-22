@@ -49,6 +49,9 @@
 		315D87662B29DC9A00875F61 /* CardsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CardsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		315D876A2B29DC9A00875F61 /* CardsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsUITests.swift; sourceTree = "<group>"; };
 		315D876C2B29DC9A00875F61 /* CardsUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		315D87792B29DCB000875F61 /* ViewExperiments.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = ViewExperiments.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		315E89A62B3474DA00103321 /* BezierExperiments.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = BezierExperiments.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		31FD38DB2B35A54C000F9A94 /* CardsPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = CardsPlayground.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +109,9 @@
 				315D87522B29DC9A00875F61 /* Assets.xcassets */,
 				315D87542B29DC9A00875F61 /* LaunchScreen.storyboard */,
 				315D87572B29DC9A00875F61 /* Info.plist */,
+				315D87792B29DCB000875F61 /* ViewExperiments.playground */,
+				315E89A62B3474DA00103321 /* BezierExperiments.playground */,
+				31FD38DB2B35A54C000F9A94 /* CardsPlayground.playground */,
 			);
 			path = Cards;
 			sourceTree = "<group>";
