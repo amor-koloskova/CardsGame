@@ -9,8 +9,8 @@ class MyViewController : UIViewController {
         view.backgroundColor = .white
         self.view = view
         
-//        // круг
-//        view.layer.addSublayer(CircleShape(size: CGSize(width: 200, height: 150), fillColor: UIColor.gray.cgColor))
+        //        // круг
+        //        view.layer.addSublayer(CircleShape(size: CGSize(width: 200, height: 150), fillColor: UIColor.gray.cgColor))
         
         // квадрат
         //     view.layer.addSublayer(SquareShape(size: CGSize(width: 200, height: 150), fillColor: UIColor.red.cgColor))
@@ -23,10 +23,15 @@ class MyViewController : UIViewController {
         
         // игральная карточка рубашкой вверх
         let firstCardView = CardView<CircleShape>(frame: CGRect(x: 0, y: 0, width: 120, height: 150), color: .red)
+        firstCardView.flipCompletionHandler = { card in
+            card.superview?.bringSubviewToFront(card)
+        }
         self.view.addSubview(firstCardView)
         
         // игральная карточка лицевой стороной вверх
         let secondCardView = CardView<CircleShape>(frame: CGRect(x: 200, y: 0, width: 120, height: 150), color: .red)
+        secondCardView.flipCompletionHandler = { card in      card.superview?.bringSubviewToFront(card)
+        }
         self.view.addSubview(secondCardView)
         secondCardView.isFlipped = true
     }
@@ -41,6 +46,43 @@ protocol FlippableView: UIView {
 }
 
 class CardView<ShapeType: ShapeLayerProtocol> : UIView, FlippableView {
+    
+    private var startTouchPoint: CGPoint!
+    
+    // точка привязки
+    private var anchorPoint1: CGPoint = CGPoint(x: 0, y: 0)
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // изменяем координаты точки привязки
+        anchorPoint1.x = touches.first!.location(in: window).x - frame.minX
+        anchorPoint1.y = touches.first!.location(in: window).y - frame.minY
+        
+        // сохраняем исходные координаты
+        startTouchPoint = frame.origin
+    }
+    
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.frame.origin.x = touches.first!.location(in: window).x - anchorPoint1.x
+        self.frame.origin.y = touches.first!.location(in: window).y - anchorPoint1.y
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if self.frame.origin == startTouchPoint {
+            flip()
+        }
+//        // анимированно возвращаем карточку в исходную позицию
+//        UIView.animate(withDuration: 0.5) {
+//            self.frame.origin = self.startTouchPoint
+//        }
+//        
+//        // переворачиваем представление
+//        if self.transform.isIdentity {
+//            self.transform = CGAffineTransform(rotationAngle: .pi)
+//        } else {
+//            self.transform = .identity
+//        }
+    }
+    
     var isFlipped: Bool = false {
         didSet {
             self.setNeedsDisplay()
@@ -49,7 +91,18 @@ class CardView<ShapeType: ShapeLayerProtocol> : UIView, FlippableView {
     
     var flipCompletionHandler: ((FlippableView) -> Void)?
     
-    func flip() { }
+    func flip() {
+        // определяем между какими представлениями осуществить переход
+        let fromView = isFlipped ? frontSideView : backSideView
+        let toView = isFlipped ? backSideView : frontSideView
+        
+        // запускаем анимированный переход
+        UIView.transition(from: fromView, to: toView, duration: 0.5, options: [.transitionFlipFromTop], completion: { _ in
+        // обработчик переворота
+            self.flipCompletionHandler?(self)
+        })
+        isFlipped.toggle()
+    }
     
     // радиус закругления
     var cornerRadius = 20
@@ -104,6 +157,10 @@ class CardView<ShapeType: ShapeLayerProtocol> : UIView, FlippableView {
         let shapeLayer = ShapeType(size: shapeView.frame.size, fillColor: color.cgColor)
         shapeView.layer.addSublayer(shapeLayer)
         
+        // скругляем углы корневого представления
+        view.layer.masksToBounds = true
+        view.layer.cornerRadius = CGFloat(cornerRadius)
+        
         return view
     }
     
@@ -123,6 +180,11 @@ class CardView<ShapeType: ShapeLayerProtocol> : UIView, FlippableView {
         default:
             break
         }
+        
+        // скругляем углы корневого представления
+        view.layer.masksToBounds = true
+        view.layer.cornerRadius = CGFloat(cornerRadius)
+        
         return view
     }
     
@@ -293,6 +355,15 @@ class BackSideLine: CAShapeLayer, ShapeLayerProtocol {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+extension UIResponder {
+    func responderChain() -> String {
+        guard let next = next else {
+            return String(describing: Self.self)
+        }
+        return String(describing: Self.self) + " -> " + next.responderChain()
     }
 }
 
